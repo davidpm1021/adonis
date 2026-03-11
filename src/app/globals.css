@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+:root {
+  /* ADONIS Color System */
+  --bg-primary: #0a0a0f;
+  --bg-card: #12121a;
+  --bg-card-hover: #1a1a2e;
+  --bg-card-elevated: #1e1e30;
+
+  --accent-teal: #00e5c7;
+  --accent-teal-dim: #00e5c720;
+  --accent-teal-glow: #00e5c740;
+  --accent-amber: #f59e0b;
+  --accent-amber-dim: #f59e0b20;
+  --accent-red: #ef4444;
+  --accent-red-dim: #ef444420;
+  --accent-green: #22c55e;
+  --accent-green-dim: #22c55e20;
+
+  --text-primary: #f5f5f5;
+  --text-secondary: #8b8b9e;
+  --text-muted: #4a4a5e;
+
+  --border: #1e1e30;
+  --border-hover: #2e2e45;
+
+  /* Fonts */
+  --font-display: var(--font-jetbrains-mono), monospace;
+  --font-body: var(--font-ibm-plex-sans), system-ui, sans-serif;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow: 300ms ease;
+}
+
+@theme inline {
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-card: var(--bg-card);
+  --color-bg-card-hover: var(--bg-card-hover);
+  --color-bg-card-elevated: var(--bg-card-elevated);
+
+  --color-accent-teal: var(--accent-teal);
+  --color-accent-teal-dim: var(--accent-teal-dim);
+  --color-accent-teal-glow: var(--accent-teal-glow);
+  --color-accent-amber: var(--accent-amber);
+  --color-accent-amber-dim: var(--accent-amber-dim);
+  --color-accent-red: var(--accent-red);
+  --color-accent-red-dim: var(--accent-red-dim);
+  --color-accent-green: var(--accent-green);
+  --color-accent-green-dim: var(--accent-green-dim);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  --color-border: var(--border);
+  --color-border-hover: var(--border-hover);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tabular numerals for data display */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-hover);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Teal glow effect */
+.teal-glow {
+  box-shadow: 0 0 20px var(--accent-teal-glow);
+}
+
+/* Pulse animation for splash */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; filter: brightness(1); }
+  50% { opacity: 1; filter: brightness(1.2); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Fade in */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+/* Skeleton loading */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-card-hover) 50%, var(--bg-card) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+/* Streak flame pulse */
+@keyframes flame-pulse {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  25% { transform: scale(1.05) rotate(-2deg); filter: brightness(1.1); }
+  50% { transform: scale(1.1); filter: brightness(1.2); }
+  75% { transform: scale(1.05) rotate(2deg); filter: brightness(1.1); }
+}
+
+.animate-flame-pulse {
+  animation: flame-pulse 2s ease-in-out infinite;
+}
+
+/* Streak flame glow (Immortal tier) */
+@keyframes flame-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px var(--accent-teal)) brightness(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px var(--accent-teal)) drop-shadow(0 0 24px var(--accent-teal)) brightness(1.3);
+  }
+}
+
+.animate-flame-glow {
+  animation: flame-glow 3s ease-in-out infinite;
+}
+
+/* Celebration burst */
+@keyframes celebration-scale {
+  0% { transform: scale(0) rotate(-10deg); }
+  50% { transform: scale(1.15) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.animate-celebration {
+  animation: celebration-scale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
