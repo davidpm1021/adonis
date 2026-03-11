@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { success, error, withErrorHandling } from "@/lib/api";
 import fs from "fs";
 import path from "path";

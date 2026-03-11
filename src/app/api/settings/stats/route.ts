@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { sqlite } from "@/db";
 import { success, withErrorHandling } from "@/lib/api";
 import fs from "fs";

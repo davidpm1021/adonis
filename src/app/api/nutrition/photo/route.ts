@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from "next/server";
 import { getAnthropicClient, getModel, logAIUsage } from "@/lib/ai";
 
