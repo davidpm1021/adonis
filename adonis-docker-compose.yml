@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # Your AI-powered Next.js application
+  adonis-ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: adonis-ai
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      # Add any other environment variables your app needs
+    volumes:
+      # Mount your database file if using SQLite
+      - ./data:/app/data
+    restart: unless-stopped
+    networks:
+      - adonis-network
+
+  # Optional: PostgreSQL database if you're using it
+  # postgres:
+  #   image: postgres:16-alpine
+  #   container_name: adonis-postgres
+  #   environment:
+  #     POSTGRES_USER: adonis
+  #     POSTGRES_PASSWORD: your_password
+  #     POSTGRES_DB: adonis_ai
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   networks:
+  #     - adonis-network
+  #   restart: unless-stopped
+
+networks:
+  adonis-network:
+    driver: bridge
+
+# volumes:
+#   postgres-data:
