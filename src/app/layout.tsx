@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import type { Metadata } from "next";
 import { jetbrainsMono, ibmPlexSans } from "@/lib/fonts";
 import { AppShell } from "@/components/layout/app-shell";
