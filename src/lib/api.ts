@@ -17,7 +17,7 @@ export function error(message: string, status = 400) {
 }
 
 export function serverError(err: unknown) {
-  console.error(err);
+  console.error("[API ERROR]", err instanceof Error ? err.stack : err);
   const message = err instanceof Error ? err.message : "Internal server error";
   return error(message, 500);
 }
