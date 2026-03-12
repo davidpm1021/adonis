@@ -1,9 +1,9 @@
-import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
+import { pgTable, text, integer, real, serial } from "drizzle-orm/pg-core";
 
 // ---------------------------------------------------------------------------
 // 1. User Profile (single-user: David)
 // ---------------------------------------------------------------------------
-export const userProfile = sqliteTable("user_profile", {
+export const userProfile = pgTable("user_profile", {
   id: integer("id").primaryKey().$defaultFn(() => 1),
   name: text("name"),
   dob: text("dob"),
@@ -26,8 +26,8 @@ export const userProfile = sqliteTable("user_profile", {
 // ---------------------------------------------------------------------------
 // Streak Freezes (Duolingo-style "miss 1 day without breaking streak")
 // ---------------------------------------------------------------------------
-export const streakFreezes = sqliteTable("streak_freezes", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const streakFreezes = pgTable("streak_freezes", {
+  id: serial("id").primaryKey(),
   date: text("date").notNull(),
   streakType: text("streak_type").notNull(),
   reason: text("reason"),
@@ -37,8 +37,8 @@ export const streakFreezes = sqliteTable("streak_freezes", {
 // ---------------------------------------------------------------------------
 // Streak Milestones (tracks when milestones are hit for celebrations)
 // ---------------------------------------------------------------------------
-export const streakMilestones = sqliteTable("streak_milestones", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const streakMilestones = pgTable("streak_milestones", {
+  id: serial("id").primaryKey(),
   streakType: text("streak_type").notNull(),
   milestone: integer("milestone").notNull(),
   achievedDate: text("achieved_date").notNull(),
@@ -49,8 +49,8 @@ export const streakMilestones = sqliteTable("streak_milestones", {
 // ---------------------------------------------------------------------------
 // 2. Daily Log
 // ---------------------------------------------------------------------------
-export const dailyLog = sqliteTable("daily_log", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const dailyLog = pgTable("daily_log", {
+  id: serial("id").primaryKey(),
   date: text("date").unique().notNull(),
   morningWalk: integer("morning_walk").default(0),
   walkDurationMinutes: integer("walk_duration_minutes"),
@@ -79,8 +79,8 @@ export const dailyLog = sqliteTable("daily_log", {
 // ---------------------------------------------------------------------------
 // 3. Body Metrics
 // ---------------------------------------------------------------------------
-export const bodyMetrics = sqliteTable("body_metrics", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const bodyMetrics = pgTable("body_metrics", {
+  id: serial("id").primaryKey(),
   date: text("date").notNull(),
   weight: real("weight"),
   bodyFatPercentage: real("body_fat_percentage"),
@@ -102,8 +102,8 @@ export const bodyMetrics = sqliteTable("body_metrics", {
 // ---------------------------------------------------------------------------
 // 4. Lab Results
 // ---------------------------------------------------------------------------
-export const labResults = sqliteTable("lab_results", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const labResults = pgTable("lab_results", {
+  id: serial("id").primaryKey(),
   date: text("date").notNull(),
   testName: text("test_name").notNull(),
   value: real("value").notNull(),
@@ -118,8 +118,8 @@ export const labResults = sqliteTable("lab_results", {
 // ---------------------------------------------------------------------------
 // 5. Workouts
 // ---------------------------------------------------------------------------
-export const workouts = sqliteTable("workouts", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const workouts = pgTable("workouts", {
+  id: serial("id").primaryKey(),
   date: text("date").notNull(),
   workoutType: text("workout_type").notNull(),
   durationMinutes: integer("duration_minutes"),
@@ -133,8 +133,8 @@ export const workouts = sqliteTable("workouts", {
 // ---------------------------------------------------------------------------
 // 6. Exercises
 // ---------------------------------------------------------------------------
-export const exercises = sqliteTable("exercises", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const exercises = pgTable("exercises", {
+  id: serial("id").primaryKey(),
   workoutId: integer("workout_id")
     .notNull()
     .references(() => workouts.id),
@@ -150,8 +150,8 @@ export const exercises = sqliteTable("exercises", {
 // ---------------------------------------------------------------------------
 // 7. Nutrition Log
 // ---------------------------------------------------------------------------
-export const nutritionLog = sqliteTable("nutrition_log", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const nutritionLog = pgTable("nutrition_log", {
+  id: serial("id").primaryKey(),
   date: text("date").notNull(),
   mealType: text("meal_type").notNull(), // breakfast | lunch | snack | dinner
   description: text("description"),
@@ -169,8 +169,8 @@ export const nutritionLog = sqliteTable("nutrition_log", {
 // ---------------------------------------------------------------------------
 // 8. Supplement Log
 // ---------------------------------------------------------------------------
-export const supplementLog = sqliteTable("supplement_log", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const supplementLog = pgTable("supplement_log", {
+  id: serial("id").primaryKey(),
   date: text("date").notNull(),
   supplementName: text("supplement_name").notNull(),
   dose: text("dose"),
@@ -182,8 +182,8 @@ export const supplementLog = sqliteTable("supplement_log", {
 // ---------------------------------------------------------------------------
 // 9. Sleep Log
 // ---------------------------------------------------------------------------
-export const sleepLog = sqliteTable("sleep_log", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const sleepLog = pgTable("sleep_log", {
+  id: serial("id").primaryKey(),
   date: text("date").unique().notNull(),
   bedtime: text("bedtime"),
   wakeTime: text("wake_time"),
@@ -199,8 +199,8 @@ export const sleepLog = sqliteTable("sleep_log", {
 // ---------------------------------------------------------------------------
 // 10. AI Conversations
 // ---------------------------------------------------------------------------
-export const aiConversations = sqliteTable("ai_conversations", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const aiConversations = pgTable("ai_conversations", {
+  id: serial("id").primaryKey(),
   sessionId: text("session_id").notNull(),
   role: text("role").notNull(), // user | assistant | system
   content: text("content").notNull(),
@@ -210,8 +210,8 @@ export const aiConversations = sqliteTable("ai_conversations", {
 // ---------------------------------------------------------------------------
 // 11. Goals
 // ---------------------------------------------------------------------------
-export const goals = sqliteTable("goals", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const goals = pgTable("goals", {
+  id: serial("id").primaryKey(),
   category: text("category").notNull(),
   description: text("description").notNull(),
   targetValue: real("target_value"),
@@ -226,8 +226,8 @@ export const goals = sqliteTable("goals", {
 // ---------------------------------------------------------------------------
 // 12. Training Phases
 // ---------------------------------------------------------------------------
-export const trainingPhases = sqliteTable("training_phases", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const trainingPhases = pgTable("training_phases", {
+  id: serial("id").primaryKey(),
   phaseNumber: integer("phase_number").notNull(),
   phaseName: text("phase_name").notNull(),
   startDate: text("start_date"),
@@ -242,8 +242,8 @@ export const trainingPhases = sqliteTable("training_phases", {
 // ---------------------------------------------------------------------------
 // 13. Nutrition Targets
 // ---------------------------------------------------------------------------
-export const nutritionTargets = sqliteTable("nutrition_targets", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const nutritionTargets = pgTable("nutrition_targets", {
+  id: serial("id").primaryKey(),
   effectiveDate: text("effective_date").notNull(),
   caloriesMin: integer("calories_min"),
   caloriesMax: integer("calories_max"),
@@ -262,8 +262,8 @@ export const nutritionTargets = sqliteTable("nutrition_targets", {
 // ---------------------------------------------------------------------------
 // 14. Goal History
 // ---------------------------------------------------------------------------
-export const goalHistory = sqliteTable("goal_history", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const goalHistory = pgTable("goal_history", {
+  id: serial("id").primaryKey(),
   goalId: integer("goal_id")
     .notNull()
     .references(() => goals.id),
@@ -278,8 +278,8 @@ export const goalHistory = sqliteTable("goal_history", {
 // ---------------------------------------------------------------------------
 // 15. Weekly Reports
 // ---------------------------------------------------------------------------
-export const weeklyReports = sqliteTable("weekly_reports", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const weeklyReports = pgTable("weekly_reports", {
+  id: serial("id").primaryKey(),
   weekStart: text("week_start").notNull(),
   weekEnd: text("week_end").notNull(),
   reportContent: text("report_content"), // markdown
@@ -291,8 +291,8 @@ export const weeklyReports = sqliteTable("weekly_reports", {
 // ---------------------------------------------------------------------------
 // 16. Favorite Meals
 // ---------------------------------------------------------------------------
-export const favoriteMeals = sqliteTable("favorite_meals", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const favoriteMeals = pgTable("favorite_meals", {
+  id: serial("id").primaryKey(),
   name: text("name").notNull(),
   mealType: text("meal_type"),
   items: text("items"), // JSON
@@ -309,8 +309,8 @@ export const favoriteMeals = sqliteTable("favorite_meals", {
 // ---------------------------------------------------------------------------
 // 17. Nutrition Insights
 // ---------------------------------------------------------------------------
-export const nutritionInsights = sqliteTable("nutrition_insights", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const nutritionInsights = pgTable("nutrition_insights", {
+  id: serial("id").primaryKey(),
   insightType: text("insight_type").notNull(),
   content: text("content").notNull(),
   dataRangeStart: text("data_range_start"),
@@ -321,8 +321,8 @@ export const nutritionInsights = sqliteTable("nutrition_insights", {
 // ---------------------------------------------------------------------------
 // 18. Calculated Markers
 // ---------------------------------------------------------------------------
-export const calculatedMarkers = sqliteTable("calculated_markers", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const calculatedMarkers = pgTable("calculated_markers", {
+  id: serial("id").primaryKey(),
   date: text("date").notNull(),
   markerName: text("marker_name").notNull(),
   value: real("value").notNull(),
@@ -335,8 +335,8 @@ export const calculatedMarkers = sqliteTable("calculated_markers", {
 // ---------------------------------------------------------------------------
 // 19. Preventive Care
 // ---------------------------------------------------------------------------
-export const preventiveCare = sqliteTable("preventive_care", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const preventiveCare = pgTable("preventive_care", {
+  id: serial("id").primaryKey(),
   itemName: text("item_name").notNull(),
   category: text("category").notNull(),
   status: text("status").default("not_scheduled"),
@@ -354,8 +354,8 @@ export const preventiveCare = sqliteTable("preventive_care", {
 // ---------------------------------------------------------------------------
 // 20. Vitals Log
 // ---------------------------------------------------------------------------
-export const vitalsLog = sqliteTable("vitals_log", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const vitalsLog = pgTable("vitals_log", {
+  id: serial("id").primaryKey(),
   date: text("date").notNull(),
   timeOfDay: text("time_of_day"),
   systolic: integer("systolic"),
@@ -369,8 +369,8 @@ export const vitalsLog = sqliteTable("vitals_log", {
 // ---------------------------------------------------------------------------
 // 21. Environment Checklist
 // ---------------------------------------------------------------------------
-export const environmentChecklist = sqliteTable("environment_checklist", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const environmentChecklist = pgTable("environment_checklist", {
+  id: serial("id").primaryKey(),
   item: text("item").notNull(),
   category: text("category").notNull(),
   completed: integer("completed").default(0),
@@ -382,8 +382,8 @@ export const environmentChecklist = sqliteTable("environment_checklist", {
 // ---------------------------------------------------------------------------
 // 22. Food Parse Cache
 // ---------------------------------------------------------------------------
-export const foodParseCache = sqliteTable("food_parse_cache", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const foodParseCache = pgTable("food_parse_cache", {
+  id: serial("id").primaryKey(),
   inputHash: text("input_hash").unique().notNull(),
   inputText: text("input_text").notNull(),
   parsedResult: text("parsed_result").notNull(), // JSON
@@ -395,8 +395,8 @@ export const foodParseCache = sqliteTable("food_parse_cache", {
 // ---------------------------------------------------------------------------
 // 23. AI Usage Log
 // ---------------------------------------------------------------------------
-export const aiUsageLog = sqliteTable("ai_usage_log", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const aiUsageLog = pgTable("ai_usage_log", {
+  id: serial("id").primaryKey(),
   feature: text("feature").notNull(),
   model: text("model").notNull(),
   inputTokens: integer("input_tokens"),
