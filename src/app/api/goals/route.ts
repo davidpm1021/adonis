@@ -56,7 +56,7 @@ export const POST = withErrorHandling(async (req) => {
       status: data.status,
       createdAt: now,
       updatedAt: now,
-    })
+    });
     .returning();
 
   const newGoal = result[0];
@@ -75,8 +75,7 @@ export const POST = withErrorHandling(async (req) => {
       reason: "Goal created",
       eventDate: today,
       createdAt: now,
-    })
-    .run();
+    });
 
   return success(newGoal, 201);
 });

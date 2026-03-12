@@ -38,7 +38,7 @@ export const GET = withErrorHandling(async () => {
         .select({
           date: schema.nutritionLog.date,
           totalProtein: sql<number>`sum(${schema.nutritionLog.proteinG})`,
-        })
+        });
         .from(schema.nutritionLog)
         .groupBy(schema.nutritionLog.date)
         .orderBy(asc(schema.nutritionLog.date)),
@@ -185,8 +185,7 @@ export const GET = withErrorHandling(async () => {
             achievedDate: today,
             celebrated: 0,
             createdAt: now,
-          })
-          .run();
+          });
       }
     }
   }

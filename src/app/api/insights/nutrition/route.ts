@@ -264,8 +264,7 @@ Return ONLY a valid JSON array (no additional text):
           dataRangeStart: thirtyDaysAgo,
           dataRangeEnd: today,
           createdAt: now,
-        })
-        .run();
+        });
     }
 
     // Get stored insights (including the ones we just created)

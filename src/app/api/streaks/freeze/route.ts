@@ -67,8 +67,7 @@ export const POST = withErrorHandling(async (req) => {
       streakType: data.streakType,
       reason: data.reason,
       createdAt: now,
-    })
-    .run();
+    });
 
   return success({
     frozen: true,

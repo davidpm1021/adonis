@@ -79,8 +79,9 @@ export function logAIUsage(params: {
     cached: params.cached ? 1 : 0,
     costEstimate: Math.round(costEstimate * 10000) / 10000,
     createdAt: nowISO(),
-  }).run();
+  });
 }
+
 
 // ---------------------------------------------------------------------------
 // Food Parse Cache
@@ -104,8 +105,7 @@ export function getCachedParse(inputText: string) {
     // Increment hit count
     db.update(foodParseCache)
       .set({ hitCount: (cached.hitCount || 1) + 1, updatedAt: nowISO() })
-      .where(eq(foodParseCache.id, cached.id))
-      .run();
+      .where(eq(foodParseCache.id, cached.id));
     return JSON.parse(cached.parsedResult);
   }
   return null;
@@ -127,7 +127,7 @@ export function setCachedParse(inputText: string, result: unknown) {
       hitCount: sql`${foodParseCache.hitCount} + 1`,
       updatedAt: nowISO(),
     },
-  }).run();
+  });
 }
 
 // ---------------------------------------------------------------------------

@@ -40,13 +40,12 @@ export async function POST(req: Request) {
     }
 
     // 2. Mark current phase as completed
-    db.update(schema.trainingPhases)
+    await db.update(schema.trainingPhases)
       .set({
         status: "completed",
         endDate: today,
       })
-      .where(eq(schema.trainingPhases.id, data.currentPhaseId))
-      .run();
+      .where(eq(schema.trainingPhases.id, data.currentPhaseId));
 
     // 3. Create new phase
     const newPhaseNumber = currentPhase.phaseNumber + 1;
@@ -84,8 +83,7 @@ export async function POST(req: Request) {
           reason: "Training phase advanced via adaptive intelligence",
           eventDate: today,
           createdAt: now,
-        })
-        .run();
+        });
     }
 
     return success(

@@ -34,8 +34,7 @@ export const PUT = withErrorHandling(async (req) => {
   await db
     .update(schema.streakMilestones)
     .set({ celebrated: 1 })
-    .where(eq(schema.streakMilestones.id, id))
-    .run();
+    .where(eq(schema.streakMilestones.id, id));
 
   return success({ celebrated: true });
 });

@@ -37,16 +37,15 @@ export async function POST(req: Request) {
     const previousStatus = goal.status;
 
     // 2. Update goal status
-    db.update(schema.goals)
+    await db.update(schema.goals)
       .set({
         status: "archived",
         updatedAt: now,
       })
-      .where(eq(schema.goals.id, data.goalId))
-      .run();
+      .where(eq(schema.goals.id, data.goalId));
 
     // 3. Log transition in goal history
-    db.insert(schema.goalHistory)
+    await db.insert(schema.goalHistory)
       .values({
         goalId: data.goalId,
         eventType: "archived",
@@ -56,8 +55,7 @@ export async function POST(req: Request) {
           data.reason || "Archived via adaptive intelligence dashboard",
         eventDate: today,
         createdAt: now,
-      })
-      .run();
+      });
 
     return success({
       goalId: data.goalId,

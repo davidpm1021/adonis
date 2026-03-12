@@ -79,8 +79,7 @@ export const POST = withErrorHandling(async (req) => {
     await db
       .update(schema.userProfile)
       .set(cleanData)
-      .where(eq(schema.userProfile.id, 1))
-      .run();
+      .where(eq(schema.userProfile.id, 1));
   } else {
     await db
       .insert(schema.userProfile)
@@ -88,8 +87,7 @@ export const POST = withErrorHandling(async (req) => {
         id: 1,
         ...cleanData,
         createdAt: now,
-      })
-      .run();
+      });
   }
 
   // On final step (setupComplete = 1), seed defaults if needed
@@ -119,8 +117,7 @@ export const POST = withErrorHandling(async (req) => {
           rationale:
             "Default targets. Adjust based on your goals and activity level.",
           createdAt: now,
-        })
-        .run();
+        });
     }
 
     // Seed default supplement stack for today if none exist
@@ -142,8 +139,7 @@ export const POST = withErrorHandling(async (req) => {
             taken: 0,
             timeOfDay: supp.time_of_day,
             createdAt: now,
-          })
-          .run();
+          });
       }
     }
 
@@ -163,8 +159,7 @@ export const POST = withErrorHandling(async (req) => {
             weight: data.startingWeight,
             notes: "Starting weight from setup wizard",
             createdAt: now,
-          })
-          .run();
+          });
       }
     }
 
@@ -212,8 +207,7 @@ export const POST = withErrorHandling(async (req) => {
           ]),
           notes: "Foundation phase. Focus on movement quality over weight.",
           createdAt: now,
-        })
-        .run();
+        });
     }
   }
 

@@ -1,8 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  output: "standalone", // ADD THIS LINE
+  output: "standalone",
+
+  // Skip static optimization during build
+  generateBuildId: async () => {
+    return "build-" + Date.now();
+  },
 };
 
 export default nextConfig;
