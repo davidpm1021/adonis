@@ -10,13 +10,12 @@ export const GET = withErrorHandling(async (req) => {
   const url = new URL(req.url);
   const { limit, offset } = dateRangeParams(url);
 
-  const rows = db
+  const rows = await db
     .select()
     .from(schema.aiUsageLog)
     .orderBy(desc(schema.aiUsageLog.createdAt))
     .limit(limit)
-    .offset(offset)
-    .all();
+    .offset(offset);
 
   return success(rows);
 });

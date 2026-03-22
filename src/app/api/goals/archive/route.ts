@@ -20,11 +20,10 @@ export async function POST(req: Request) {
     const today = todayET();
 
     // 1. Verify goal exists
-    const goal = db
+    const goal = (await db
       .select()
       .from(schema.goals)
-      .where(eq(schema.goals.id, data.goalId))
-      .get();
+      .where(eq(schema.goals.id, data.goalId)))[0];
 
     if (!goal) {
       return error("Goal not found.", 404);

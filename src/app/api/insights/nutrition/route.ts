@@ -30,11 +30,10 @@ export async function POST() {
     const now = nowISO();
 
     // Get last 30 days of nutrition data
-    const nutritionLogs = db
+    const nutritionLogs = await db
       .select()
       .from(schema.nutritionLog)
-      .where(gte(schema.nutritionLog.date, thirtyDaysAgo))
-      .all();
+      .where(gte(schema.nutritionLog.date, thirtyDaysAgo));
 
     if (nutritionLogs.length === 0) {
       return success({
@@ -122,12 +121,11 @@ export async function POST() {
     }
 
     // Fiber compliance
-    const currentTargets = db
+    const currentTargets = (await db
       .select()
       .from(schema.nutritionTargets)
       .orderBy(desc(schema.nutritionTargets.effectiveDate))
-      .limit(1)
-      .get();
+      .limit(1))[0];
 
     const fiberTarget = currentTargets?.fiberMin || 25;
     const daysHittingFiber = days.filter(
@@ -235,7 +233,7 @@ Return ONLY a valid JSON array (no additional text):
       messages: [{ role: "user", content: prompt }],
     });
 
-    logAIUsage({
+    await logAIUsage({
       feature: "nutrition_insights",
       model,
       inputTokens: response.usage.input_tokens,
@@ -257,7 +255,7 @@ Return ONLY a valid JSON array (no additional text):
 
     // Store insights in the database
     for (const insight of aiInsights) {
-      db.insert(schema.nutritionInsights)
+      await db.insert(schema.nutritionInsights)
         .values({
           insightType: insight.type,
           content: `**${insight.title}**: ${insight.content}`,
@@ -268,12 +266,11 @@ Return ONLY a valid JSON array (no additional text):
     }
 
     // Get stored insights (including the ones we just created)
-    const storedInsights = db
+    const storedInsights = await db
       .select()
       .from(schema.nutritionInsights)
       .orderBy(desc(schema.nutritionInsights.createdAt))
-      .limit(20)
-      .all();
+      .limit(20);
 
     return success({
       insights: storedInsights,

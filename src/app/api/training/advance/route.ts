@@ -25,11 +25,10 @@ export async function POST(req: Request) {
     const today = todayET();
 
     // 1. Verify current phase exists and is active
-    const currentPhase = db
+    const currentPhase = (await db
       .select()
       .from(schema.trainingPhases)
-      .where(eq(schema.trainingPhases.id, data.currentPhaseId))
-      .get();
+      .where(eq(schema.trainingPhases.id, data.currentPhaseId)))[0];
 
     if (!currentPhase) {
       return error("Current phase not found.", 404);
@@ -67,14 +66,13 @@ export async function POST(req: Request) {
     const newPhase = result[0];
 
     // 4. Log in goal history (find any training-related goal)
-    const trainingGoals = db
+    const trainingGoals = await db
       .select()
       .from(schema.goals)
-      .where(eq(schema.goals.category, "training"))
-      .all();
+      .where(eq(schema.goals.category, "training"));
 
     for (const goal of trainingGoals) {
-      db.insert(schema.goalHistory)
+      await db.insert(schema.goalHistory)
         .values({
           goalId: goal.id,
           eventType: "updated",

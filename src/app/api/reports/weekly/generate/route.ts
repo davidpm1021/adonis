@@ -64,11 +64,10 @@ export const POST = withErrorHandling(async () => {
   // ------------------------------------------------------------------
   // 1. Check if a report for this week already exists
   // ------------------------------------------------------------------
-  const existing = db
+  const existing = (await db
     .select()
     .from(schema.weeklyReports)
-    .where(eq(schema.weeklyReports.weekStart, weekStart))
-    .get();
+    .where(eq(schema.weeklyReports.weekStart, weekStart)))[0];
 
   if (existing) {
     return success({
@@ -502,7 +501,7 @@ Remember to also include <key_metrics>JSON</key_metrics> and <recommendations>JS
       .trim();
 
     // Log AI usage
-    logAIUsage({
+    await logAIUsage({
       feature: "weekly_report",
       model,
       inputTokens,
@@ -541,7 +540,7 @@ Remember to also include <key_metrics>JSON</key_metrics> and <recommendations>JS
     };
   }
 
-  const inserted = db
+  const inserted = (await db
     .insert(schema.weeklyReports)
     .values({
       weekStart,
@@ -551,8 +550,7 @@ Remember to also include <key_metrics>JSON</key_metrics> and <recommendations>JS
       aiRecommendations: JSON.stringify(aiRecommendations),
       createdAt: now,
     })
-    .returning()
-    .get();
+    .returning())[0];
 
   return success({
     report: inserted,

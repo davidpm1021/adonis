@@ -7,7 +7,7 @@ import { success, withErrorHandling } from "@/lib/api";
 
 // GET /api/ai-coach/sessions — List distinct sessions with metadata
 export const GET = withErrorHandling(async () => {
-  const rows = db
+  const rows = await db
     .select({
       sessionId: schema.aiConversations.sessionId,
       firstMessage: sql<string>`MIN(${schema.aiConversations.createdAt})`,
@@ -16,8 +16,7 @@ export const GET = withErrorHandling(async () => {
     })
     .from(schema.aiConversations)
     .groupBy(schema.aiConversations.sessionId)
-    .orderBy(sql`MAX(${schema.aiConversations.createdAt}) DESC`)
-    .all();
+    .orderBy(sql`MAX(${schema.aiConversations.createdAt}) DESC`);
 
   return success(rows);
 });

@@ -11,13 +11,12 @@ import { subDays, format } from "date-fns";
 export async function POST() {
   try {
     // 1. Get current active phase
-    const activePhase = db
+    const activePhase = (await db
       .select()
       .from(schema.trainingPhases)
       .where(eq(schema.trainingPhases.status, "active"))
       .orderBy(desc(schema.trainingPhases.phaseNumber))
-      .limit(1)
-      .get();
+      .limit(1))[0];
 
     if (!activePhase) {
       return error("No active training phase found.", 404);
@@ -27,17 +26,16 @@ export async function POST() {
     const today = todayET();
     const twoWeeksAgo = format(subDays(new Date(), 14), "yyyy-MM-dd");
 
-    const recentWorkouts = db
+    const recentWorkouts = await db
       .select()
       .from(schema.workouts)
-      .where(gte(schema.workouts.date, twoWeeksAgo))
-      .all();
+      .where(gte(schema.workouts.date, twoWeeksAgo));
 
     // 3. Get exercises for those workouts
     const workoutIds = recentWorkouts.map((w) => w.id);
     const recentExercises =
       workoutIds.length > 0
-        ? db
+        ? await db
             .select()
             .from(schema.exercises)
             .where(
@@ -46,16 +44,14 @@ export async function POST() {
                 sql`, `
               )})`
             )
-            .all()
         : [];
 
     // 4. Get phase-duration workout stats for consistency
     const phaseStartDate = activePhase.startDate || twoWeeksAgo;
-    const phaseWorkouts = db
+    const phaseWorkouts = await db
       .select()
       .from(schema.workouts)
-      .where(gte(schema.workouts.date, phaseStartDate))
-      .all();
+      .where(gte(schema.workouts.date, phaseStartDate));
 
     const completedCount = phaseWorkouts.filter(
       (w) => w.completed === 1
@@ -198,7 +194,7 @@ If the recommendation is "maintain", "extend", or "deload", the proposed_phase c
     });
 
     // Log AI usage
-    logAIUsage({
+    await logAIUsage({
       feature: "training_evaluate",
       model,
       inputTokens: response.usage.input_tokens,

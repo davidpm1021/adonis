@@ -11,12 +11,11 @@ import { subDays, format } from "date-fns";
 export async function POST() {
   try {
     // 1. Get current nutrition targets
-    const currentTargets = db
+    const currentTargets = (await db
       .select()
       .from(schema.nutritionTargets)
       .orderBy(desc(schema.nutritionTargets.effectiveDate))
-      .limit(1)
-      .get();
+      .limit(1))[0];
 
     if (!currentTargets) {
       return error("No nutrition targets configured.", 404);
@@ -26,25 +25,22 @@ export async function POST() {
     const today = todayET();
     const twoWeeksAgo = format(subDays(new Date(), 14), "yyyy-MM-dd");
 
-    const nutritionLogs = db
+    const nutritionLogs = await db
       .select()
       .from(schema.nutritionLog)
-      .where(gte(schema.nutritionLog.date, twoWeeksAgo))
-      .all();
+      .where(gte(schema.nutritionLog.date, twoWeeksAgo));
 
     // 3. Get weight trend (last 14 days)
-    const weightData = db
+    const weightData = await db
       .select()
       .from(schema.bodyMetrics)
-      .where(gte(schema.bodyMetrics.date, twoWeeksAgo))
-      .all();
+      .where(gte(schema.bodyMetrics.date, twoWeeksAgo));
 
     // 4. Get daily logs for activity level
-    const dailyLogs = db
+    const dailyLogs = await db
       .select()
       .from(schema.dailyLog)
-      .where(gte(schema.dailyLog.date, twoWeeksAgo))
-      .all();
+      .where(gte(schema.dailyLog.date, twoWeeksAgo));
 
     // 5. Aggregate nutrition data by day
     const dailyNutrition: Record<
@@ -217,7 +213,7 @@ If maintaining, proposed_targets should match current targets with an updated ra
       messages: [{ role: "user", content: prompt }],
     });
 
-    logAIUsage({
+    await logAIUsage({
       feature: "nutrition_evaluate",
       model,
       inputTokens: response.usage.input_tokens,

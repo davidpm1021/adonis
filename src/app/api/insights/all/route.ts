@@ -12,13 +12,12 @@ export const GET = withErrorHandling(async (req) => {
   const url = new URL(req.url);
   const { limit, offset } = dateRangeParams(url);
 
-  const nutritionInsights = db
+  const nutritionInsights = await db
     .select()
     .from(schema.nutritionInsights)
     .orderBy(desc(schema.nutritionInsights.createdAt))
     .limit(limit)
-    .offset(offset)
-    .all();
+    .offset(offset);
 
   // Group by type for structured display
   const grouped: Record<string, typeof nutritionInsights> = {};

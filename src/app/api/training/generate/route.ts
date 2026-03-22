@@ -140,7 +140,7 @@ Return ONLY valid JSON with this exact structure:
     ],
   });
 
-  logAIUsage({
+  await logAIUsage({
     feature: "workout_generate",
     model,
     inputTokens: response.usage.input_tokens,

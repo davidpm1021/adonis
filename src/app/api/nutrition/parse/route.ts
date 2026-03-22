@@ -21,7 +21,7 @@ export const POST = withErrorHandling(async (req) => {
   const { text } = await parseBody(req, foodParseSchema);
 
   // Check cache first
-  const cached = getCachedParse(text);
+  const cached = await getCachedParse(text);
   if (cached) {
     return success({ ...cached, cached: true });
   }
@@ -47,7 +47,7 @@ export const POST = withErrorHandling(async (req) => {
   });
 
   // Log usage
-  logAIUsage({
+  await logAIUsage({
     feature: "food_parse",
     model,
     inputTokens: response.usage.input_tokens,
@@ -78,7 +78,7 @@ export const POST = withErrorHandling(async (req) => {
   }
 
   // Cache the result
-  setCachedParse(text, parsed);
+  await setCachedParse(text, parsed);
 
   return success({
     ...parsed,

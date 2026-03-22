@@ -99,7 +99,7 @@ export const GET = withErrorHandling(async (req) => {
     messages: [{ role: "user", content: prompt }],
   });
 
-  logAIUsage({
+  await logAIUsage({
     feature: "meal_suggest",
     model,
     inputTokens: response.usage.input_tokens,

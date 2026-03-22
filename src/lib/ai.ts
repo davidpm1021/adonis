@@ -37,12 +37,11 @@ export function getModel(feature: AIFeature): string {
 // ---------------------------------------------------------------------------
 export async function checkRateLimit(): Promise<{ allowed: boolean; remaining: number; limit: number }> {
   const today = todayET();
-  const result = db.select({ count: sql<number>`COUNT(*)` })
+  const rows = await db.select({ count: sql<number>`COUNT(*)` })
     .from(aiConversations)
-    .where(sql`date(${aiConversations.createdAt}) = ${today} AND ${aiConversations.role} = 'user'`)
-    .get();
+    .where(sql`date(${aiConversations.createdAt}) = ${today} AND ${aiConversations.role} = 'user'`);
 
-  const used = result?.count || 0;
+  const used = rows[0]?.count || 0;
   return {
     allowed: used < AI_RATE_LIMIT,
     remaining: Math.max(0, AI_RATE_LIMIT - used),
@@ -53,7 +52,7 @@ export async function checkRateLimit(): Promise<{ allowed: boolean; remaining: n
 // ---------------------------------------------------------------------------
 // AI Usage Logging
 // ---------------------------------------------------------------------------
-export function logAIUsage(params: {
+export async function logAIUsage(params: {
   feature: string;
   model: string;
   inputTokens: number;
@@ -71,7 +70,7 @@ export function logAIUsage(params: {
     (params.inputTokens / 1_000_000) * modelCost.input +
     (params.outputTokens / 1_000_000) * modelCost.output;
 
-  db.insert(aiUsageLog).values({
+  await db.insert(aiUsageLog).values({
     feature: params.feature,
     model: params.model,
     inputTokens: params.inputTokens,
@@ -98,12 +97,13 @@ export function hashInput(text: string): string {
   return crypto.createHash("sha256").update(normalizeInput(text)).digest("hex");
 }
 
-export function getCachedParse(inputText: string) {
+export async function getCachedParse(inputText: string) {
   const hash = hashInput(inputText);
-  const cached = db.select().from(foodParseCache).where(eq(foodParseCache.inputHash, hash)).get();
+  const rows = await db.select().from(foodParseCache).where(eq(foodParseCache.inputHash, hash));
+  const cached = rows[0];
   if (cached) {
     // Increment hit count
-    db.update(foodParseCache)
+    await db.update(foodParseCache)
       .set({ hitCount: (cached.hitCount || 1) + 1, updatedAt: nowISO() })
       .where(eq(foodParseCache.id, cached.id));
     return JSON.parse(cached.parsedResult);
@@ -111,9 +111,9 @@ export function getCachedParse(inputText: string) {
   return null;
 }
 
-export function setCachedParse(inputText: string, result: unknown) {
+export async function setCachedParse(inputText: string, result: unknown) {
   const hash = hashInput(inputText);
-  db.insert(foodParseCache).values({
+  await db.insert(foodParseCache).values({
     inputHash: hash,
     inputText: normalizeInput(inputText),
     parsedResult: JSON.stringify(result),

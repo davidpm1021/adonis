@@ -179,7 +179,7 @@ export async function POST(req: Request) {
     });
 
     // Log AI usage
-    logAIUsage({
+    await logAIUsage({
       feature: "photo_parse",
       model,
       inputTokens: response.usage.input_tokens,

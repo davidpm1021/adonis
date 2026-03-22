@@ -81,7 +81,7 @@ export const POST = withErrorHandling(async (req) => {
     outputTokens = response.usage.output_tokens;
 
     // Log AI usage
-    logAIUsage({
+    await logAIUsage({
       feature: "ai_coach",
       model,
       inputTokens,
@@ -129,7 +129,7 @@ export const POST = withErrorHandling(async (req) => {
 
 async function buildProfileContext(): Promise<string> {
   try {
-    const profile = db.select().from(schema.userProfile).get();
+    const profile = (await db.select().from(schema.userProfile))[0];
     if (!profile) return "No profile data available.";
 
     const parts: string[] = [];
@@ -171,12 +171,11 @@ async function buildHealthContext(): Promise<string> {
 
   try {
     // Latest 7 daily logs
-    const logs = db
+    const logs = await db
       .select()
       .from(schema.dailyLog)
       .orderBy(desc(schema.dailyLog.date))
-      .limit(7)
-      .all();
+      .limit(7);
 
     if (logs.length > 0) {
       parts.push("RECENT DAILY LOGS (last 7):");
@@ -193,12 +192,11 @@ async function buildHealthContext(): Promise<string> {
     }
 
     // Latest body metrics
-    const metrics = db
+    const metrics = await db
       .select()
       .from(schema.bodyMetrics)
       .orderBy(desc(schema.bodyMetrics.date))
-      .limit(3)
-      .all();
+      .limit(3);
 
     if (metrics.length > 0) {
       parts.push("\nRECENT BODY METRICS:");
@@ -212,12 +210,11 @@ async function buildHealthContext(): Promise<string> {
     }
 
     // Latest sleep logs
-    const sleepLogs = db
+    const sleepLogs = await db
       .select()
       .from(schema.sleepLog)
       .orderBy(desc(schema.sleepLog.date))
-      .limit(7)
-      .all();
+      .limit(7);
 
     if (sleepLogs.length > 0) {
       parts.push("\nRECENT SLEEP (last 7):");
@@ -231,12 +228,11 @@ async function buildHealthContext(): Promise<string> {
     }
 
     // Latest labs (priority 1 only, last draw)
-    const labs = db
+    const labs = await db
       .select()
       .from(schema.labResults)
       .orderBy(desc(schema.labResults.date))
-      .limit(20)
-      .all();
+      .limit(20);
 
     if (labs.length > 0) {
       parts.push("\nRECENT LAB RESULTS:");
@@ -246,12 +242,11 @@ async function buildHealthContext(): Promise<string> {
     }
 
     // Current training phase
-    const phase = db
+    const phase = (await db
       .select()
       .from(schema.trainingPhases)
       .where(eq(schema.trainingPhases.status, "active"))
-      .limit(1)
-      .get();
+      .limit(1))[0];
 
     if (phase) {
       parts.push(`\nCURRENT TRAINING PHASE: Phase ${phase.phaseNumber} - ${phase.phaseName} (${phase.startDate} to ${phase.endDate || "ongoing"})`);
@@ -265,11 +260,10 @@ async function buildHealthContext(): Promise<string> {
 
 async function buildGoalsContext(): Promise<string> {
   try {
-    const goals = db
+    const goals = await db
       .select()
       .from(schema.goals)
-      .where(eq(schema.goals.status, "active"))
-      .all();
+      .where(eq(schema.goals.status, "active"));
 
     if (goals.length === 0) return "No active goals set.";
 
@@ -293,12 +287,11 @@ async function buildConversationHistory(
   sessionId: string,
 ): Promise<{ role: "user" | "assistant"; content: string }[]> {
   try {
-    const messages = db
+    const messages = await db
       .select()
       .from(schema.aiConversations)
       .where(eq(schema.aiConversations.sessionId, sessionId))
-      .orderBy(schema.aiConversations.id)
-      .all();
+      .orderBy(schema.aiConversations.id);
 
     // Return last 20 messages to keep context window reasonable
     return messages

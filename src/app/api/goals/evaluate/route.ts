@@ -11,11 +11,10 @@ import { subDays, format, differenceInDays, parseISO } from "date-fns";
 export async function POST() {
   try {
     // 1. Get all active goals
-    const activeGoals = db
+    const activeGoals = await db
       .select()
       .from(schema.goals)
-      .where(eq(schema.goals.status, "active"))
-      .all();
+      .where(eq(schema.goals.status, "active"));
 
     if (activeGoals.length === 0) {
       return success({
@@ -31,47 +30,41 @@ export async function POST() {
     const thirtyDaysAgo = format(subDays(new Date(), 30), "yyyy-MM-dd");
 
     // Get latest body metrics for weight/body comp goals
-    const latestMetrics = db
+    const latestMetrics = (await db
       .select()
       .from(schema.bodyMetrics)
       .orderBy(desc(schema.bodyMetrics.date))
-      .limit(1)
-      .get();
+      .limit(1))[0];
 
     // Get recent weight trend
-    const recentWeights = db
+    const recentWeights = await db
       .select()
       .from(schema.bodyMetrics)
-      .where(gte(schema.bodyMetrics.date, thirtyDaysAgo))
-      .all();
+      .where(gte(schema.bodyMetrics.date, thirtyDaysAgo));
 
     // Get goal history for staleness detection
-    const goalHistoryRows = db
+    const goalHistoryRows = await db
       .select()
       .from(schema.goalHistory)
-      .orderBy(desc(schema.goalHistory.eventDate))
-      .all();
+      .orderBy(desc(schema.goalHistory.eventDate));
 
     // Get recent workout data
-    const recentWorkouts = db
+    const recentWorkouts = await db
       .select()
       .from(schema.workouts)
-      .where(gte(schema.workouts.date, thirtyDaysAgo))
-      .all();
+      .where(gte(schema.workouts.date, thirtyDaysAgo));
 
     // Get recent nutrition data
-    const recentNutrition = db
+    const recentNutrition = await db
       .select()
       .from(schema.nutritionLog)
-      .where(gte(schema.nutritionLog.date, thirtyDaysAgo))
-      .all();
+      .where(gte(schema.nutritionLog.date, thirtyDaysAgo));
 
     // Get recent sleep data
-    const recentSleep = db
+    const recentSleep = await db
       .select()
       .from(schema.sleepLog)
-      .where(gte(schema.sleepLog.date, thirtyDaysAgo))
-      .all();
+      .where(gte(schema.sleepLog.date, thirtyDaysAgo));
 
     // 3. Evaluate each goal
     const achieved: {
@@ -198,7 +191,7 @@ If no new goals are needed, return an empty array: []`;
       messages: [{ role: "user", content: prompt }],
     });
 
-    logAIUsage({
+    await logAIUsage({
       feature: "goals_evaluate",
       model,
       inputTokens: response.usage.input_tokens,

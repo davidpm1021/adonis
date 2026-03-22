@@ -14,16 +14,15 @@ export const GET = withErrorHandling(async (req) => {
   let query = db.select().from(schema.goals).orderBy(desc(schema.goals.createdAt));
 
   if (status) {
-    const rows = db
+    const rows = await db
       .select()
       .from(schema.goals)
       .where(eq(schema.goals.status, status))
-      .orderBy(desc(schema.goals.createdAt))
-      .all();
+      .orderBy(desc(schema.goals.createdAt));
     return success(rows);
   }
 
-  const rows = query.all();
+  const rows = await query;
   return success(rows);
 });
 

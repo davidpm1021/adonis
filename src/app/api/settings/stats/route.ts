@@ -1,11 +1,8 @@
 export const dynamic = 'force-dynamic';
 
-import { sqlite } from "@/db";
+import { db } from "@/db";
+import { sql } from "drizzle-orm";
 import { success, withErrorHandling } from "@/lib/api";
-import fs from "fs";
-import path from "path";
-
-const DB_PATH = process.env.DATABASE_URL || "./adonis.db";
 
 // All tables to count
 const TABLE_NAMES = [
@@ -43,10 +40,10 @@ export const GET = withErrorHandling(async () => {
 
   for (const tableName of TABLE_NAMES) {
     try {
-      const result = sqlite
-        .prepare(`SELECT COUNT(*) as count FROM ${tableName}`)
-        .get() as { count: number } | undefined;
-      const count = result?.count ?? 0;
+      const result = await db.execute(
+        sql.raw(`SELECT COUNT(*) as count FROM ${tableName}`)
+      );
+      const count = Number(result.rows[0]?.count ?? 0);
       tables[tableName] = count;
       totalRecords += count;
     } catch {
@@ -55,28 +52,10 @@ export const GET = withErrorHandling(async () => {
     }
   }
 
-  // Get database file size
-  let databaseSizeBytes = 0;
-  try {
-    const resolvedPath = path.resolve(DB_PATH);
-    if (fs.existsSync(resolvedPath)) {
-      const stats = fs.statSync(resolvedPath);
-      databaseSizeBytes = stats.size;
-
-      // Include WAL file size if present
-      const walPath = resolvedPath + "-wal";
-      if (fs.existsSync(walPath)) {
-        databaseSizeBytes += fs.statSync(walPath).size;
-      }
-    }
-  } catch {
-    // Ignore file size errors
-  }
-
   return success({
     tables,
     totalRecords,
-    databaseSizeBytes,
+    databaseSizeBytes: null, // Not applicable for PostgreSQL in the same way as SQLite
     tableCount: TABLE_NAMES.length,
   });
 });
