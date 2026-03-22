@@ -10,8 +10,7 @@ import { QuickActions } from "@/components/dashboard/quick-actions";
 import { PhaseStatus } from "@/components/dashboard/phase-status";
 import { WeeklyReportWidget } from "@/components/dashboard/weekly-report-widget";
 import { DashboardStreakHub } from "@/components/dashboard/streaks/dashboard-streak-hub";
-import { ActionQueue } from "@/components/dashboard/action-queue";
-import { NudgeCards } from "@/components/dashboard/nudge-cards";
+import { DailyBriefing } from "@/components/dashboard/daily-briefing";
 import {
   calculateSobriety,
   calculateMoneySaved,
@@ -252,12 +251,9 @@ export default async function DashboardPage() {
         subtitle={dayFormatted}
       />
 
-      {/* AI Nudges — contextual daily insights */}
-      <NudgeCards />
-
-      {/* Action Queue — contextual "what to do next" */}
-      <div className="mb-4">
-        <ActionQueue />
+      {/* AI Daily Briefing — the primary dashboard experience */}
+      <div className="mb-6">
+        <DailyBriefing sobrietyDays={sobriety.days} />
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">

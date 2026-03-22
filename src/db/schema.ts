@@ -464,7 +464,20 @@ export const dailyNudges = pgTable("daily_nudges", {
 });
 
 // ---------------------------------------------------------------------------
-// 27. Monthly Reports (Sprint 5)
+// 27. Daily Briefings (AI Coach Briefing)
+// ---------------------------------------------------------------------------
+export const dailyBriefings = pgTable("daily_briefings", {
+  id: serial("id").primaryKey(),
+  date: text("date").notNull(),
+  briefingJson: text("briefing_json").notNull(),
+  model: text("model").notNull(),
+  generatedAt: text("generated_at").notNull(),
+  stale: integer("stale").default(0),
+  createdAt: text("created_at"),
+});
+
+// ---------------------------------------------------------------------------
+// 28. Monthly Reports (Sprint 5)
 // ---------------------------------------------------------------------------
 export const monthlyReports = pgTable("monthly_reports", {
   id: serial("id").primaryKey(),
