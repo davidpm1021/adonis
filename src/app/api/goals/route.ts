@@ -56,13 +56,13 @@ export const POST = withErrorHandling(async (req) => {
       status: data.status,
       createdAt: now,
       updatedAt: now,
-    });
+    })
     .returning();
 
   const newGoal = result[0];
 
   // Log creation in goal history
-  db.insert(schema.goalHistory)
+  await db.insert(schema.goalHistory)
     .values({
       goalId: newGoal.id,
       eventType: "created",

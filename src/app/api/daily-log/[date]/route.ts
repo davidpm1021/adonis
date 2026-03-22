@@ -11,6 +11,7 @@ import {
   nowISO,
 } from "@/lib/api";
 import { dailyLogSchema } from "@/lib/validations";
+import { syncDailyLogToSupplements } from "@/lib/sync-daily-log";
 import type { z } from "zod";
 
 type PartialDailyLog = z.infer<ReturnType<typeof dailyLogSchema.partial>>;
@@ -56,6 +57,11 @@ export const PUT = withErrorHandling(async (req, ctx) => {
     })
     .where(eq(schema.dailyLog.date, date))
     .returning();
+
+  // If supplementsTaken was toggled, sync to individual supplement_log entries
+  if (data.supplementsTaken !== undefined) {
+    await syncDailyLogToSupplements(date, data.supplementsTaken);
+  }
 
   return success(result[0]);
 });

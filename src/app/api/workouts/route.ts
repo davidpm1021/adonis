@@ -11,6 +11,7 @@ import {
   nowISO,
 } from "@/lib/api";
 import { workoutSchema } from "@/lib/validations";
+import { syncDailyLog } from "@/lib/sync-daily-log";
 
 // GET /api/workouts — List workouts with optional date range & pagination
 export const GET = withErrorHandling(async (req) => {
@@ -76,6 +77,11 @@ export const POST = withErrorHandling(async (req) => {
         .returning();
       exerciseRows.push(result[0]);
     }
+  }
+
+  // Sync: mark strengthTraining = 1 in daily_log for this date
+  if (data.workoutType === "Strength") {
+    await syncDailyLog(data.date, "strengthTraining", 1);
   }
 
   return success({ ...workout, exercises: exerciseRows }, 201);

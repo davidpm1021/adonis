@@ -38,7 +38,7 @@ export const GET = withErrorHandling(async () => {
         .select({
           date: schema.nutritionLog.date,
           totalProtein: sql<number>`sum(${schema.nutritionLog.proteinG})`,
-        });
+        })
         .from(schema.nutritionLog)
         .groupBy(schema.nutritionLog.date)
         .orderBy(asc(schema.nutritionLog.date)),

@@ -35,7 +35,7 @@ export const GET = withErrorHandling(async (req) => {
   return success(rows);
 });
 
-// POST /api/metrics — Create body metrics entry with auto Navy BF calculation
+// POST /api/metrics — Create or update body metrics entry (upserts by date)
 export const POST = withErrorHandling(async (req) => {
   const data = (await validateBody(req, bodyMetricsSchema)) as BodyMetricsInput;
 
@@ -76,6 +76,40 @@ export const POST = withErrorHandling(async (req) => {
         });
       }
     }
+  }
+
+  // Check if entry already exists for this date — upsert instead of duplicate
+  const existing = await db
+    .select()
+    .from(schema.bodyMetrics)
+    .where(eq(schema.bodyMetrics.date, data.date))
+    .limit(1);
+
+  if (existing.length > 0) {
+    // Build update payload from provided (non-undefined) fields
+    const updateData: Record<string, unknown> = {};
+    if (data.weight !== undefined) updateData.weight = data.weight;
+    if (data.bodyFatPercentage !== undefined) updateData.bodyFatPercentage = data.bodyFatPercentage;
+    if (data.waistInches !== undefined) updateData.waistInches = data.waistInches;
+    if (data.chestInches !== undefined) updateData.chestInches = data.chestInches;
+    if (data.armInches !== undefined) updateData.armInches = data.armInches;
+    if (data.thighInches !== undefined) updateData.thighInches = data.thighInches;
+    if (data.neckInches !== undefined) updateData.neckInches = data.neckInches;
+    if (data.dexaTotalFatPct !== undefined) updateData.dexaTotalFatPct = data.dexaTotalFatPct;
+    if (data.dexaLeanMassLbs !== undefined) updateData.dexaLeanMassLbs = data.dexaLeanMassLbs;
+    if (data.dexaFatMassLbs !== undefined) updateData.dexaFatMassLbs = data.dexaFatMassLbs;
+    if (data.dexaVisceralFatArea !== undefined) updateData.dexaVisceralFatArea = data.dexaVisceralFatArea;
+    if (data.dexaBoneDensity !== undefined) updateData.dexaBoneDensity = data.dexaBoneDensity;
+    if (navyBfEstimate !== null) updateData.navyBfEstimate = navyBfEstimate;
+    if (data.notes !== undefined) updateData.notes = data.notes;
+
+    const updated = await db
+      .update(schema.bodyMetrics)
+      .set(updateData)
+      .where(eq(schema.bodyMetrics.id, existing[0].id))
+      .returning();
+
+    return success(updated[0]);
   }
 
   const inserted = await db.insert(schema.bodyMetrics).values({

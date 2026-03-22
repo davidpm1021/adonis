@@ -9,6 +9,7 @@ import {
   withErrorHandling,
   nowISO,
 } from "@/lib/api";
+import { syncSupplementsToDailyLog } from "@/lib/sync-daily-log";
 import { z } from "zod";
 
 const toggleSchema = z.object({
@@ -98,6 +99,9 @@ export const POST = withErrorHandling(async (req, ctx) => {
       .where(eq(schema.supplementLog.id, existing[0].id))
       .returning();
 
+    // Sync: if all supplements are now taken, set daily_log.supplementsTaken = 1
+    await syncSupplementsToDailyLog(date);
+
     return success(updated[0]);
   }
 
@@ -112,6 +116,9 @@ export const POST = withErrorHandling(async (req, ctx) => {
       createdAt: now,
     })
     .returning();
+
+  // Sync to daily_log
+  await syncSupplementsToDailyLog(date);
 
   return success(result[0], 201);
 });
