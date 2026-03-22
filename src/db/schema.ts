@@ -176,6 +176,7 @@ export const supplementLog = pgTable("supplement_log", {
   dose: text("dose"),
   taken: integer("taken").default(0),
   timeOfDay: text("time_of_day"),
+  purpose: text("purpose"),
   createdAt: text("created_at"),
 });
 
@@ -193,6 +194,7 @@ export const sleepLog = pgTable("sleep_log", {
   wakeUps: integer("wake_ups"),
   bipapUsed: integer("bipap_used").default(1),
   notes: text("notes"),
+  source: text("source").default("manual"),
   createdAt: text("created_at"),
 });
 
@@ -363,6 +365,7 @@ export const vitalsLog = pgTable("vitals_log", {
   restingHeartRate: integer("resting_heart_rate"),
   spo2: real("spo2"),
   notes: text("notes"),
+  source: text("source").default("manual"),
   createdAt: text("created_at"),
 });
 
@@ -403,5 +406,72 @@ export const aiUsageLog = pgTable("ai_usage_log", {
   outputTokens: integer("output_tokens"),
   cached: integer("cached").default(0),
   costEstimate: real("cost_estimate"),
+  createdAt: text("created_at"),
+});
+
+// ---------------------------------------------------------------------------
+// 24. Garmin Daily Summary (Sprint 3)
+// ---------------------------------------------------------------------------
+export const garminDailySummary = pgTable("garmin_daily_summary", {
+  id: serial("id").primaryKey(),
+  date: text("date").unique().notNull(),
+  totalSteps: integer("total_steps"),
+  stepGoal: integer("step_goal"),
+  floorsClimbed: integer("floors_climbed"),
+  activeMinutes: integer("active_minutes"),
+  caloriesTotal: integer("calories_total"),
+  caloriesActive: integer("calories_active"),
+  distanceMeters: real("distance_meters"),
+  averageStress: integer("average_stress"),
+  maxStress: integer("max_stress"),
+  bodyBatteryHigh: integer("body_battery_high"),
+  bodyBatteryLow: integer("body_battery_low"),
+  averageHr: integer("average_hr"),
+  maxHr: integer("max_hr"),
+  minHr: integer("min_hr"),
+  restingHr: integer("resting_hr"),
+  spo2Average: real("spo2_average"),
+  rawJson: text("raw_json"),
+  syncedAt: text("synced_at"),
+  createdAt: text("created_at"),
+});
+
+// ---------------------------------------------------------------------------
+// 25. Garmin Sync Config (Sprint 3)
+// ---------------------------------------------------------------------------
+export const garminSyncConfig = pgTable("garmin_sync_config", {
+  id: integer("id").primaryKey().$defaultFn(() => 1),
+  enabled: integer("enabled").default(0),
+  garminEmail: text("garmin_email"),
+  garminPasswordEncrypted: text("garmin_password_encrypted"),
+  lastSyncAt: text("last_sync_at"),
+  syncIntervalMinutes: integer("sync_interval_minutes").default(15),
+  createdAt: text("created_at"),
+  updatedAt: text("updated_at"),
+});
+
+// ---------------------------------------------------------------------------
+// 26. Daily Nudges (Sprint 4)
+// ---------------------------------------------------------------------------
+export const dailyNudges = pgTable("daily_nudges", {
+  id: serial("id").primaryKey(),
+  date: text("date").notNull(),
+  nudgeText: text("nudge_text").notNull(),
+  nudgeType: text("nudge_type").notNull(),
+  priority: integer("priority").default(1),
+  dismissed: integer("dismissed").default(0),
+  createdAt: text("created_at"),
+});
+
+// ---------------------------------------------------------------------------
+// 27. Monthly Reports (Sprint 5)
+// ---------------------------------------------------------------------------
+export const monthlyReports = pgTable("monthly_reports", {
+  id: serial("id").primaryKey(),
+  monthStart: text("month_start").notNull(),
+  monthEnd: text("month_end").notNull(),
+  reportContent: text("report_content"),
+  keyMetrics: text("key_metrics"),
+  aiRecommendations: text("ai_recommendations"),
   createdAt: text("created_at"),
 });

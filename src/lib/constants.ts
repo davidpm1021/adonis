@@ -165,6 +165,20 @@ export const NAV_ITEMS = [
   { label: "Settings", href: "/settings", icon: "Settings" },
 ] as const;
 
+// Supplement purposes — why each supplement is taken
+export const SUPPLEMENT_PURPOSES: Record<string, string> = {
+  "Fish Oil (EPA/DHA)": "Reduces inflammation, supports cardiovascular and brain health, improves triglycerides",
+  "Vitamin D3": "Immune function, bone density, mood regulation — critical with low baseline levels",
+  "Vitamin K2 (MK-7)": "Directs calcium to bones (not arteries), works synergistically with D3",
+  "B-Complex": "Energy metabolism, nervous system support, methylation — important with ADHD medication",
+  "Creatine Monohydrate": "Muscle recovery, strength gains, cognitive function, well-researched and safe",
+  "Zinc": "Testosterone support, immune function, wound healing — take with food to avoid nausea",
+  "Zinc Picolinate": "Testosterone support, immune function, wound healing — take with food to avoid nausea",
+  "Magnesium Glycinate": "Sleep quality, muscle relaxation, stress reduction — glycinate form is best absorbed at night",
+  "Collagen Peptides": "Joint health, skin elasticity, Achilles tendon support — take on empty stomach",
+  "Psyllium Husk": "Fiber supplementation for gut health, blood sugar regulation, and NAFLD management",
+};
+
 // Lab retest schedule
 export const LAB_RETEST_SCHEDULE = [
   { label: "Baseline", date: "2025-10-21", status: "completed" as const },
